@@ -15,14 +15,11 @@ public class Connection {
     private final BufferedReader input;
     private final BufferedWriter output;
 
-
     public Connection(Socket socket, ConnectionEventListener eventListener) throws IOException {
         this.socket = socket;
         this.eventListener = eventListener;
         this.input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-
-        //List<String> dataContent = Server.getInstance().getStorage().getContent();
 
         mainThread = new Thread(new Runnable() {
             @Override
@@ -31,36 +28,19 @@ public class Connection {
                 try {
                     eventListener.onConnect(Connection.this);
                     sendMessage("HELLO!");
-                    /*repeatRandom(new Timer(), 1000, 5000, 40, new Runnable() {
-                        @Override
-                        public void run() {
-                            sendMessage("AAAAA");
-                        }
-                    });*/
+
                     List<String> dataContent = Server.getInstance().getDataContent();
                     while (!mainThread.isInterrupted()) {
-                        //String msg = input.readLine();
                         Random rand = new Random();
                         long delay = (long)(rand.nextDouble() * (5000 - 1000)) + 1000;
-                        /*try {
-                            Thread.sleep(3*1000);
-                            sendMessage("LLLL");
-                        } catch (InterruptedException e) {
-                            eventListener.onDisconnect(Connection.this);
-                            throw new RuntimeException(e);
-                        }*/
 
                         //Message from data file
-
                         Random generator = new Random();
                         int randomIndex = generator.nextInt(dataContent.size());
                         String msg = dataContent.get(randomIndex);
 
                         sendMessage(msg);
                         Thread.sleep(3*1000);
-
-                        //eventListener.onReceiveString(Connection.this, msg);
-
                     }
                 }catch (Exception e) {
                     throw new RuntimeException(e);
@@ -114,7 +94,5 @@ public class Connection {
             }
         }, delay);
     }
-
-
 
 }

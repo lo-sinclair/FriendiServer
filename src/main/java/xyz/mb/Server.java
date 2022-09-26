@@ -12,10 +12,6 @@ import java.util.logging.Logger;
 public class Server implements ConnectionEventListener {
 
     public static final int PORT = 8801;
-    private static
-
-
-
 
     Logger log = Logger.getLogger("com.elkey.friendi.logger");
     private  final List<Connection> connections = new ArrayList<>();
@@ -55,11 +51,6 @@ public class Server implements ConnectionEventListener {
     public void onConnect(Connection connection) {
         connections.add(connection);
         log.info("Client connected: " + connection.toString());
-    }
-
-    @Override
-    public void onReceiveString(Connection connection, String msg) {
-        connection.sendMessage(msg);
     }
 
     @Override
