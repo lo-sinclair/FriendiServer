@@ -15,11 +15,15 @@ public class Connection {
     private final BufferedReader input;
     private final BufferedWriter output;
 
+    public final long MIN_DELAY = 1000;
+    public final long MAX_DELAY = 5000;
+
     public Connection(Socket socket, ConnectionEventListener eventListener) throws IOException {
         this.socket = socket;
         this.eventListener = eventListener;
         this.input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+
 
         mainThread = new Thread(new Runnable() {
             @Override
@@ -27,12 +31,11 @@ public class Connection {
 
                 try {
                     eventListener.onConnect(Connection.this);
-                    sendMessage("HELLO!");
 
                     List<String> dataContent = Server.getInstance().getDataContent();
                     while (!mainThread.isInterrupted()) {
                         Random rand = new Random();
-                        long delay = (long)(rand.nextDouble() * (5000 - 1000)) + 1000;
+                        long delay = (long)(rand.nextDouble() * (MAX_DELAY - MIN_DELAY)) + MIN_DELAY;
 
                         //Message from data file
                         Random generator = new Random();
@@ -40,7 +43,7 @@ public class Connection {
                         String msg = dataContent.get(randomIndex);
 
                         sendMessage(msg);
-                        Thread.sleep(3*1000);
+                        Thread.sleep(delay);
                     }
                 }catch (Exception e) {
                     throw new RuntimeException(e);

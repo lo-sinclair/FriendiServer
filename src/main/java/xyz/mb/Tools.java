@@ -1,6 +1,3 @@
 package xyz.mb;
 
-public class Tools {
-
-
-}
+public class Tools { }
