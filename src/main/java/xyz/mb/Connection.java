@@ -15,8 +15,8 @@ public class Connection {
     private final BufferedReader input;
     private final BufferedWriter output;
 
-    public final long MIN_DELAY = 1000;
-    public final long MAX_DELAY = 5000;
+    public final int MIN_DELAY = 1;
+    public final int MAX_DELAY = 5;
 
     public Connection(Socket socket, ConnectionEventListener eventListener) throws IOException {
         this.socket = socket;
@@ -33,17 +33,22 @@ public class Connection {
                     eventListener.onConnect(Connection.this);
 
                     List<String> dataContent = Server.getInstance().getDataContent();
+                    long timeMark = System.currentTimeMillis();
+                    Random rand = new Random();
+                    long delay = (long)rand.nextInt((MAX_DELAY - MIN_DELAY)+1)+MIN_DELAY ;
                     while (!mainThread.isInterrupted()) {
-                        Random rand = new Random();
-                        long delay = (long)(rand.nextDouble() * (MAX_DELAY - MIN_DELAY)) + MIN_DELAY;
-
                         //Message from data file
                         Random generator = new Random();
                         int randomIndex = generator.nextInt(dataContent.size());
                         String msg = dataContent.get(randomIndex);
 
-                        sendMessage(msg);
-                        Thread.sleep(delay);
+                        if( System.currentTimeMillis() - timeMark > delay*1000 ) {
+                            delay = (long)rand.nextInt((MAX_DELAY - MIN_DELAY)+1)+MIN_DELAY;
+                            sendMessage(msg);
+                            timeMark = System.currentTimeMillis();
+                        }
+
+                        //Thread.sleep(delay);
                     }
                 }catch (Exception e) {
                     throw new RuntimeException(e);
